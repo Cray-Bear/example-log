@@ -10,7 +10,6 @@ import java.util.Date;
 @Component
 @Slf4j
 public class LogMockTask {
-
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Scheduled(fixedRate = 5000)
