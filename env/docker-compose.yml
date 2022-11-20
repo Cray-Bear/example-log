@@ -20,3 +20,23 @@ services:
     command:
       - '--character-set-server=utf8mb4'
       - '--collation-server=utf8mb4_general_ci'
+  db-config:
+    image: mysql:5.7
+    container_name: mysql-config
+    environment:
+      MYSQL_DATABASE: 'db_config'
+      MYSQL_USER: 'query'
+      MYSQL_PASSWORD: 'nJze!CmT'
+      MYSQL_ROOT_PASSWORD: '65y*pXQbWw1&%h9x'
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+    ports:
+      - '13307:3306'
+    expose:
+      - '13307'
+    volumes:
+      - './mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql:rw'
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_general_ci'
