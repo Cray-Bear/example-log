@@ -19,8 +19,7 @@ insert into t_user (id, real_name, id_no, create_time, remark) values (5, '周�
 insert into t_user (id, real_name, id_no, create_time, remark) values (6, '吴六', '120116202211151319', '2022-11-14 07:13:59', now());
 
 
-ALTER TABLE t_user ADD real_name_cipher varchar(100) DEFAULT NULL COMMENT '真实姓名-密文列';
-ALTER TABLE t_user ADD id_no_cipher varchar(100) DEFAULT NULL COMMENT '身份证号-密文列';
 
 
+## ALTER TABLE t_user ADD pwd_cipher varchar(100)  NULL;
 

@@ -1,8 +1,65 @@
-version: '3.3'
+version: '3.8'
 services:
+  zookeeper:
+    image: zookeeper:3.7
+    container_name: zookeeper
+    networks:
+      - sharding-net
+    ports:
+      - '12181:2181'
+    expose:
+      - '12181'
+  db-hn:
+    image: mysql:5.7
+    container_name: mysql-hn
+    networks:
+      - sharding-net
+    environment:
+      MYSQL_DATABASE: 'db_hn'
+      MYSQL_USER: 'query'
+      MYSQL_PASSWORD: 'nJze!CmT'
+      MYSQL_ROOT_PASSWORD: '65y*pXQbWw1&%h9x'
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+    ports:
+      - '13310:3306'
+    expose:
+      - '13310'
+    volumes:
+      - './mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql:rw'
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+
+  db-hb:
+    image: mysql:5.7
+    container_name: mysql-hb
+    networks:
+      - sharding-net
+    environment:
+      MYSQL_DATABASE: 'db_hb'
+      MYSQL_USER: 'query'
+      MYSQL_PASSWORD: 'nJze!CmT'
+      MYSQL_ROOT_PASSWORD: '65y*pXQbWw1&%h9x'
+      MYSQL_ROOT_HOST: '%'
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+    ports:
+      - '13308:3306'
+    expose:
+      - '13308'
+    volumes:
+      - './mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql:rw'
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+
   db-hz:
     image: mysql:5.7
     container_name: mysql-hz
+    networks:
+      - sharding-net
     environment:
       MYSQL_DATABASE: 'db_hz'
       MYSQL_USER: 'query'
@@ -19,24 +76,25 @@ services:
       - './mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql:rw'
     command:
       - '--character-set-server=utf8mb4'
-      - '--collation-server=utf8mb4_general_ci'
-  db-config:
-    image: mysql:5.7
-    container_name: mysql-config
-    environment:
-      MYSQL_DATABASE: 'db_config'
-      MYSQL_USER: 'query'
-      MYSQL_PASSWORD: 'nJze!CmT'
-      MYSQL_ROOT_PASSWORD: '65y*pXQbWw1&%h9x'
-      MYSQL_ROOT_HOST: '%'
-      TZ: Asia/Shanghai
-      LANG: C.UTF-8
+      - '--collation-server=utf8mb4_unicode_ci'
+
+  sharding-proxy:
+    image: apache/shardingsphere-proxy:5.2.1
+    container_name: sharding-proxy
+    depends_on:
+      - db-hn
+      - db-hb
+      - db-hz
+    networks:
+      - sharding-net
     ports:
-      - '13307:3306'
+      - '13312:3307'
     expose:
-      - '13307'
+      - '13312'
     volumes:
-      - './mysql/initial.sql:/docker-entrypoint-initdb.d/initial.sql:rw'
-    command:
-      - '--character-set-server=utf8mb4'
-      - '--collation-server=utf8mb4_general_ci'
+      - './sharding-proxy/conf:/opt/shardingsphere-proxy/conf'
+      - './sharding-proxy/ext-lib:/opt/shardingsphere-proxy/ext-lib'
+
+networks:
+  sharding-net:
+    driver: bridge
